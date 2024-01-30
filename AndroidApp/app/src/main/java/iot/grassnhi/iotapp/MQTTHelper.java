@@ -1,7 +1,6 @@
-package com.example.iotapp;
+package iot.grassnhi.iotapp;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;

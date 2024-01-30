@@ -1,4 +1,4 @@
-package com.example.iotapp;
+package iot.grassnhi.iotapp;
 
 import org.junit.Test;
 

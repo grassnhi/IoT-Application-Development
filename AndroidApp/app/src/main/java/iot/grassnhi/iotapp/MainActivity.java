@@ -1,10 +1,16 @@
-package com.example.iotapp;
+package iot.grassnhi.iotapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.iotapp.R;
 import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.github.angads25.toggle.model.ToggleableView;
 import com.github.angads25.toggle.widget.LabeledSwitch;
@@ -26,6 +32,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button btnNav = (Button)findViewById(R.id.btnNav);
+        btnNav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent startIntent = new Intent(getApplicationContext(), SecondActivity.class);
+                startIntent.putExtra("iot.grassnhi.iotapp.secView", "Second View :>");
+                startActivity(startIntent);
+            }
+        });
+
+        Button btnAda = (Button)findViewById(R.id.btnAda);
+        btnAda.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String ada = "https://io.adafruit.com/grassnhi/dashboards/man-hinh-dieu-hanh";
+                Uri address = Uri.parse(ada);
+
+                Intent gotAda = new Intent(Intent.ACTION_VIEW, address);
+                if(gotAda.resolveActivity(getPackageManager()) != null){
+                    startActivity(gotAda);
+                }
+
+            }
+        });
 
         txtTemp = findViewById(R.id.txtTemperature);
         txtHumi = findViewById(R.id.txtHumidity);
