@@ -123,8 +123,12 @@ public class MainActivity extends AppCompatActivity {
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 Log.d("TEST", topic + "***" + message.toString());
                 if(topic.contains("cambien1")){
+                    double temperatureValue = Double.parseDouble(message.toString());
+                    storeTemperatureData(temperatureValue);
                     txtTemp.setText(message.toString() + "°C");
                 }else if(topic.contains("cambien2")){
+                    double humidityValue = Double.parseDouble(message.toString());
+                    storeHumidityData(humidityValue);
                     txtHumi.setText(message.toString() + "%");
                 }else if(topic.contains("nutnhan1")){
                    if(message.toString().equals("1")){
@@ -145,6 +149,31 @@ public class MainActivity extends AppCompatActivity {
             public void deliveryComplete(IMqttDeliveryToken token) {
 
             }
+
+            // Method to store temperature data in the database
+            private void storeTemperatureData(double temperatureValue) {
+                DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
+                boolean isInserted = databaseHelper.insertTemperatureData(temperatureValue);
+
+                if (isInserted) {
+                    Log.d("MainActivity", "Temperature data inserted into the database");
+                } else {
+                    Log.d("MainActivity", "Failed to insert temperature data into the database");
+                }
+            }
+
+            // Method to store humidity data in the database
+            private void storeHumidityData(double humidityValue) {
+                DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
+                boolean isInserted = databaseHelper.insertHumidityData(humidityValue);
+
+                if (isInserted) {
+                    Log.d("MainActivity", "Humidity data inserted into the database");
+                } else {
+                    Log.d("MainActivity", "Failed to insert humidity data into the database");
+                }
+            }
+
         });
     }
 }
