@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IoTApp">
         <activity
+            android:name="iot.grassnhi.iotapp.LineChartActivity"
+            android:exported="true" />
+        <activity
             android:name="iot.grassnhi.iotapp.SecondActivity"
             android:exported="true" />
         <activity

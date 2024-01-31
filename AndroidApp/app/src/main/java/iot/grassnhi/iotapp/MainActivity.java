@@ -86,7 +86,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        txtTemp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to LineChartActivity when txtTemp is clicked
+                Intent intent = new Intent(MainActivity.this, LineChartActivity.class);
+                startActivity(intent);
+            }
+        });
 
         startMQTT();
     }
