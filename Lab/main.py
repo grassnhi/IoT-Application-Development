@@ -7,7 +7,7 @@ from uart import *
 
 AIO_FEED_IDs = ["nutnhan1", "nutnhan2"]
 AIO_USERNAME = "grassnhi"
-AIO_KEY = "aio_pfeK929O8eo3P3U6DN4e68C6i2C1"
+AIO_KEY = "aio_UkHB69hJcQZdLFzn7pBaxhgRI7ma"
 
 def connected(client):
     print("Ket noi thanh cong ...")
@@ -48,34 +48,34 @@ ai_result = ""
 previous_result = ""
 
 while True:
-    counter = counter - 1
+    # counter = counter - 1
     # if counter <= 0:
-        # counter = 10
-        # if sensor_type == 0:
-        #     print("Temperature...")
-        #     temp = random.randint(10, 20)
-        #     client.publish("cambien1", temp)
-        #     sensor_type = 1
-        # elif sensor_type == 1:
-        #     print("Humidity...")
-        #     humi = random.randint(50,70)
-        #     client.publish("cambien2", humi)
-        #     sensor_type = 2
-        # elif sensor_type == 2:
-        #     print("Light...")
-        #     light = random.randint(100,500)
-        #     client.publish("cambien3", light)
-        #     sensor_type = 0
+    #     counter = 10
+    #     if sensor_type == 0:
+    #         print("Temperature...")
+    #         temp = random.randint(10, 20)
+    #         client.publish("cambien1", temp)
+    #         sensor_type = 1
+    #     elif sensor_type == 1:
+    #         print("Humidity...")
+    #         humi = random.randint(50,70)
+    #         client.publish("cambien2", humi)
+    #         sensor_type = 2
+    #     elif sensor_type == 2:
+    #         print("Light...")
+    #         light = random.randint(100,500)
+    #         client.publish("cambien3", light)
+    #         sensor_type = 0
 
-    # counter_ai = counter_ai - 1
-    # if counter_ai <= 0:
-    #     counter_ai = 5
-    #     previous_result = ai_result
-    #     ai_result, pic = image_detector()
-    #     print("AI Output: ", ai_result)
-    #     if previous_result != ai_result:
-    #         client.publish("ai", ai_result)
-    #         client.publish("image", pic)
+    counter_ai = counter_ai - 1
+    if counter_ai <= 0:
+        counter_ai = 5
+        previous_result = ai_result
+        ai_result, pic = image_detector()
+        print("AI Output: ", ai_result)
+        if previous_result != ai_result:
+            client.publish("ai", ai_result)
+            client.publish("image", pic)
         
     readSerial(client)
     time.sleep(1)
