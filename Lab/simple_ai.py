@@ -14,7 +14,7 @@ model = load_model("keras_model.h5", compile=False)
 class_names = ["0 Không khẩu trang", "1 Đeo khẩu trang", "2 Không có người"]
 
 # CAMERA can be 0 or 1 based on default camera of your computer
-camera = cv2.VideoCapture("rtmp://localhost/live/grassnhi")
+camera = cv2.VideoCapture("https://10.128.47.201:8080")
 
 def image_detector():
     # Grab the webcamera's image.

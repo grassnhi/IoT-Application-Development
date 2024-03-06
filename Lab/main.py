@@ -2,12 +2,12 @@ import sys
 from Adafruit_IO import MQTTClient
 import time
 import random
-from simple_ai import *
+from cam_ai import *
 from uart import *
 
 AIO_FEED_IDs = ["nutnhan1", "nutnhan2"]
 AIO_USERNAME = "grassnhi"
-AIO_KEY = "aio_UkHB69hJcQZdLFzn7pBaxhgRI7ma"
+AIO_KEY = "aio_UMHy56Tv1uNe4kjw2aUsazuaI3up"
 
 def connected(client):
     print("Ket noi thanh cong ...")
@@ -71,6 +71,7 @@ while True:
     if counter_ai <= 0:
         counter_ai = 5
         previous_result = ai_result
+        image_capture()
         ai_result, pic = image_detector()
         print("AI Output: ", ai_result)
         if previous_result != ai_result:
