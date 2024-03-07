@@ -7,7 +7,7 @@ import cv2
 import base64
 
 #img_url = 'http://10.128.47.201:8080/photo.jpg'
-img_url = 'http://192.168.100.13:8080/photo.jpg'
+img_url = 'http://10.128.47.201:8080/photo.jpg'
 control_url = 'http://192.168.98.221/control?ai_camera='
 counter = 0
 model = load_model('keras_model.h5')
