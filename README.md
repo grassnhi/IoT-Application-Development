@@ -1,4 +1,4 @@
-# IoT ApplicationDevelopment 
+# IoT Application Development 
 
 ## Lab
 
@@ -13,3 +13,8 @@
 - Lab 3: IoT Gateway
     
     This use uart to get the data from sensors and publish the processing data to the server.
+
+- Lab 4: Android Studio App
+    - Login page
+    - Send request -> response -> toggle, no response = fail -> notify issue
+    - Non-blocking API 
