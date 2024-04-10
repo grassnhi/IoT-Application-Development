@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:home/temperature.dart';
+import 'animated_switch.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -125,7 +126,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                         ),
-
                         const SizedBox(width: 16), // Add distance
                         Expanded(
                           child: _cardMenu(
@@ -136,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             value: '45%',
                           ),
                         ),
-
                         const SizedBox(width: 16), // Add distance
                         Expanded(
                           child: _cardMenu(
@@ -154,63 +153,27 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        OutlinedButton(
-                          onPressed: () {
+                        AnimatedSwitch(
+                          isToggled: [isLedOn],
+                          index: 0,
+                          onTap: () {
                             setState(() {
                               isLedOn = !isLedOn;
                             });
                           },
-                          style: ButtonStyle(
-                            side: MaterialStateProperty.resolveWith<BorderSide>(
-                                (Set<MaterialState> states) {
-                              return BorderSide(
-                                  color: isLedOn ? Colors.green : Colors.grey, width: 2);
-                            }),
-                            shape: MaterialStateProperty.resolveWith<OutlinedBorder>(
-                                (Set<MaterialState> states) {
-                              return RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              );
-                            }),
-                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                                const EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
-                          ),
-                          child: Text(
-                            isLedOn ? 'LED ON' : 'LED OFF',
-                            style: TextStyle(
-                              color: isLedOn ? Colors.green : Colors.grey,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          label: 'LED',
+                          iconPath: 'assets/images/led.png',
                         ),
-                        OutlinedButton(
-                          onPressed: () {
+                        AnimatedSwitch(
+                          isToggled: [isPumpOn],
+                          index: 0,
+                          onTap: () {
                             setState(() {
                               isPumpOn = !isPumpOn;
                             });
                           },
-                          style: ButtonStyle(
-                            side: MaterialStateProperty.resolveWith<BorderSide>(
-                                (Set<MaterialState> states) {
-                              return BorderSide(
-                                  color: isPumpOn ? Colors.green : Colors.grey, width: 2);
-                            }),
-                            shape: MaterialStateProperty.resolveWith<OutlinedBorder>(
-                                (Set<MaterialState> states) {
-                              return RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              );
-                            }),
-                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                                const EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
-                          ),
-                          child: Text(
-                            isPumpOn ? 'PUMP ON' : 'PUMP OFF',
-                            style: TextStyle(
-                              color: isPumpOn ? Colors.green : Colors.grey,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          label: 'PUMP',
+                          iconPath: 'assets/images/fan-1.png',
                         ),
                       ],
                     ),
@@ -237,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.black, width: 1), // Add border
       ),
       child: Column(
         children: [
