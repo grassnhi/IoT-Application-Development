@@ -21,19 +21,19 @@
         android:layout_above="@id/card_view"
         android:padding="28dp">
 
-        <ImageView
-            android:layout_width="108dp"
-            android:layout_height="59dp"
-            android:src="@drawable/logo" />
+<!--        <ImageView-->
+<!--            android:layout_width="76dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:src="@drawable/logo" />-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="66dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="IOT - MY FARM"
-            android:textColor="@color/black"
-            android:textSize="32sp"
-            android:textStyle="bold" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="54dp"-->
+<!--            android:fontFamily="sans-serif-medium"-->
+<!--            android:text="IOT - MY FARM"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="32sp"-->
+<!--            android:textStyle="bold" />-->
 
 
     </LinearLayout>

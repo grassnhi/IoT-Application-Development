@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
 public class MainActivity extends AppCompatActivity {
 
     MQTTHelper mqttHelper;
-    TextView txtTemp, txtHumi;
+    TextView txtTemp, txtHumi, txtLight;
     LabeledSwitch btnLED, btnPUMP;
     ImageView imageView1, imageView2, imageView3;
     private DatabaseHelper myDB;
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         txtTemp = findViewById(R.id.txtTemperature);
         txtHumi = findViewById(R.id.txtHumidity);
+        txtLight = findViewById(R.id.txtLight);
 
         btnLED = findViewById(R.id.btnLED);
         btnPUMP = findViewById(R.id.btnPUMP);
@@ -162,6 +163,10 @@ public class MainActivity extends AppCompatActivity {
                     double humidityValue = Double.parseDouble(message.toString());
                     storeHumidityData(humidityValue);
                     txtHumi.setText(message.toString() + "%");
+                }else if(topic.contains("cambien3")){
+                    double luxValue = Double.parseDouble(message.toString());
+                    storeHumidityData(luxValue);
+                    txtLight.setText(message.toString() + "lux");
                 }else if(topic.contains("nutnhan1")){
                    if(message.toString().equals("1")){
                        btnLED.setOn(true);
@@ -205,6 +210,18 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("MainActivity", "Failed to insert humidity data into the database");
                 }
             }
+
+            private void storeLightData(double luxValue) {
+                DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
+                boolean isInserted = databaseHelper.insertLightData(luxValue);
+
+                if (isInserted) {
+                    Log.d("MainActivity", "Light data inserted into the database");
+                } else {
+                    Log.d("MainActivity", "Failed to insert Light data into the database");
+                }
+            }
+
 
         });
     }

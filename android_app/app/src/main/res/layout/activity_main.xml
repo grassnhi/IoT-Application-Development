@@ -139,7 +139,7 @@
                 app:srcCompat="@drawable/energy" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/txtLighting"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:layout_gravity="center"
@@ -151,7 +151,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/txtLighting"
+                android:id="@+id/txtLight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
