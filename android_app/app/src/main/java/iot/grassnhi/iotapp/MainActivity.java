@@ -1,14 +1,18 @@
 package iot.grassnhi.iotapp;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.iotapp.R;
 import com.github.angads25.toggle.interfaces.OnToggledListener;
@@ -27,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     MQTTHelper mqttHelper;
     TextView txtTemp, txtHumi;
     LabeledSwitch btnLED, btnPUMP;
+    ImageView imageView1, imageView2, imageView3;
+    private DatabaseHelper myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +70,13 @@ public class MainActivity extends AppCompatActivity {
         btnLED = findViewById(R.id.btnLED);
         btnPUMP = findViewById(R.id.btnPUMP);
 
+        imageView1 = findViewById(R.id.imageView1);
+        imageView2 = findViewById(R.id.imageView2);
+        imageView3 = findViewById(R.id.imageView3);
+
+        myDB = new DatabaseHelper(MainActivity.this);
+
+
         btnLED.setOnToggledListener(new OnToggledListener() {
             @Override
             public void onSwitched(ToggleableView toggleableView, boolean isOn) {
@@ -86,12 +99,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        txtTemp.setOnClickListener(new View.OnClickListener() {
+        imageView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navigate to LineChartActivity when txtTemp is clicked
-                Intent intent = new Intent(MainActivity.this, LineChartActivity.class);
-                startActivity(intent);
+                showData(myDB.getAllTemperatureData());
+            }
+        });
+
+        imageView2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showData(myDB.getAllHumidityData());
+            }
+        });
+
+        imageView3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showData(myDB.getAllLightData());
             }
         });
 
@@ -183,4 +208,40 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
+
+    private void showData(Cursor cursor) {
+        StringBuilder dataBuilder = new StringBuilder();
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String data = "ID: " + cursor.getString(0) + "\n" +
+                        "VALUE: " + cursor.getString(2) + "\n\n";
+                dataBuilder.append(data);
+            } while (cursor.moveToNext());
+
+            showMessage("Data", dataBuilder.toString());
+        } else {
+            showMessage("Data", "No data found");
+        }
+    }
+
+    private void deleteAllTemperatureData() {
+        boolean result = myDB.deleteAllTemperatureData();
+
+        if (result) {
+            Toast.makeText(MainActivity.this, "All temperature data deleted", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(MainActivity.this, "Failed to delete temperature data", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showMessage(String title, String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.create();
+        builder.setCancelable(true);
+        builder.setTitle(title);
+        builder.setMessage(msg);
+        builder.show();
+    }
+
 }
