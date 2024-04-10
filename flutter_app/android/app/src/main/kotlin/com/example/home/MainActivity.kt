@@ -1,4 +1,4 @@
-package iot.grassnhi.flutter_app
+package com.example.home
 
 import io.flutter.embedding.android.FlutterActivity
 
