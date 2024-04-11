@@ -19,10 +19,12 @@ import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.github.angads25.toggle.model.ToggleableView;
 import com.github.angads25.toggle.widget.LabeledSwitch;
 
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 
 import java.nio.charset.Charset;
 
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnNav = (Button)findViewById(R.id.btnNav);
+        Button btnNav = findViewById(R.id.btnNav);
         btnNav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnAda = (Button)findViewById(R.id.btnAda);
+        Button btnAda = findViewById(R.id.btnAda);
         btnAda.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 Uri address = Uri.parse(ada);
 
                 Intent gotAda = new Intent(Intent.ACTION_VIEW, address);
-                if(gotAda.resolveActivity(getPackageManager()) != null){
+                if (gotAda.resolveActivity(getPackageManager()) != null) {
                     startActivity(gotAda);
                 }
 
@@ -77,13 +79,31 @@ public class MainActivity extends AppCompatActivity {
 
         myDB = new DatabaseHelper(MainActivity.this);
 
+        mqttHelper = new MQTTHelper(this);
+        mqttHelper.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable throwable) {
+
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                Log.w("Mqtt", mqttMessage.toString());
+                onMessageReceived(topic, mqttMessage.toString());
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+            }
+        });
 
         btnLED.setOnToggledListener(new OnToggledListener() {
             @Override
             public void onSwitched(ToggleableView toggleableView, boolean isOn) {
-                if(isOn == true){
+                if (isOn == true) {
                     sendDataMQTT("grassnhi/feeds/nutnhan1", "1");
-                }else{
+                } else {
                     sendDataMQTT("grassnhi/feeds/nutnhan1", "0");
                 }
             }
@@ -92,9 +112,9 @@ public class MainActivity extends AppCompatActivity {
         btnPUMP.setOnToggledListener(new OnToggledListener() {
             @Override
             public void onSwitched(ToggleableView toggleableView, boolean isOn) {
-                if(isOn == true){
+                if (isOn == true) {
                     sendDataMQTT("grassnhi/feeds/nutnhan2", "1");
-                }else{
+                } else {
                     sendDataMQTT("grassnhi/feeds/nutnhan2", "0");
                 }
             }
@@ -120,11 +140,9 @@ public class MainActivity extends AppCompatActivity {
                 showData(myDB.getAllLightData());
             }
         });
-
-        startMQTT();
     }
 
-    public void sendDataMQTT(String topic, String value){
+    public void sendDataMQTT(String topic, String value) {
         MqttMessage msg = new MqttMessage();
         msg.setId(1234);
         msg.setQos(0);
@@ -135,95 +153,69 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             mqttHelper.mqttAndroidClient.publish(topic, msg);
-        }catch (MqttException e){
+        } catch (MqttException e) {
         }
     }
 
-    public void startMQTT(){
-        mqttHelper = new MQTTHelper(this);
-        mqttHelper.setCallback(new MqttCallbackExtended(){
-            @Override
-            public void connectComplete(boolean reconnect, String serverURI) {
-
+    private void onMessageReceived(String topic, String message) {
+        if (topic.contains("cambien1")) {
+            double temperatureValue = Double.parseDouble(message);
+            storeTemperatureData(temperatureValue);
+            txtTemp.setText(message + "°C");
+        } else if (topic.contains("cambien2")) {
+            double humidityValue = Double.parseDouble(message);
+            storeHumidityData(humidityValue);
+            txtHumi.setText(message + "%");
+        } else if (topic.contains("cambien3")) {
+            double luxValue = Double.parseDouble(message);
+            storeLightData(luxValue);
+            txtLight.setText(message + " lux");
+        } else if (topic.contains("nutnhan1")) {
+            if (message.equals("1")) {
+                btnLED.setOn(true);
+            } else {
+                btnLED.setOn(false);
             }
-
-            @Override
-            public void connectionLost(Throwable cause) {
-
+        } else if (topic.contains("nutnhan2")) {
+            if (message.equals("1")) {
+                btnPUMP.setOn(true);
+            } else {
+                btnPUMP.setOn(false);
             }
+        }
+    }
 
-            @Override
-            public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Log.d("TEST", topic + "***" + message.toString());
-                if(topic.contains("cambien1")){
-                    double temperatureValue = Double.parseDouble(message.toString());
-                    storeTemperatureData(temperatureValue);
-                    txtTemp.setText(message.toString() + "°C");
-                }else if(topic.contains("cambien2")){
-                    double humidityValue = Double.parseDouble(message.toString());
-                    storeHumidityData(humidityValue);
-                    txtHumi.setText(message.toString() + "%");
-                }else if(topic.contains("cambien3")){
-                    double luxValue = Double.parseDouble(message.toString());
-                    storeHumidityData(luxValue);
-                    txtLight.setText(message.toString() + "lux");
-                }else if(topic.contains("nutnhan1")){
-                   if(message.toString().equals("1")){
-                       btnLED.setOn(true);
-                   }else{
-                       btnLED.setOn(false);
-                   }
-                }else if(topic.contains("nutnhan2")){
-                    if(message.toString().equals("1")){
-                        btnPUMP.setOn(true);
-                    }else{
-                        btnPUMP.setOn(false);
-                    }
-                }
-            }
+    private void storeTemperatureData(double temperatureValue) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
+        boolean isInserted = databaseHelper.insertTemperatureData(temperatureValue);
 
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken token) {
+        if (isInserted) {
+            Log.d("MainActivity", "Temperature data inserted into the database");
+        } else {
+            Log.d("MainActivity", "Failed to insert temperature data into the database");
+        }
+    }
 
-            }
+    private void storeHumidityData(double humidityValue) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
+        boolean isInserted = databaseHelper.insertHumidityData(humidityValue);
 
-            // Method to store temperature data in the database
-            private void storeTemperatureData(double temperatureValue) {
-                DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
-                boolean isInserted = databaseHelper.insertTemperatureData(temperatureValue);
+        if (isInserted) {
+            Log.d("MainActivity", "Humidity data inserted into the database");
+        } else {
+            Log.d("MainActivity", "Failed to insert humidity data into the database");
+        }
+    }
 
-                if (isInserted) {
-                    Log.d("MainActivity", "Temperature data inserted into the database");
-                } else {
-                    Log.d("MainActivity", "Failed to insert temperature data into the database");
-                }
-            }
+    private void storeLightData(double luxValue) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
+        boolean isInserted = databaseHelper.insertLightData(luxValue);
 
-            // Method to store humidity data in the database
-            private void storeHumidityData(double humidityValue) {
-                DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
-                boolean isInserted = databaseHelper.insertHumidityData(humidityValue);
-
-                if (isInserted) {
-                    Log.d("MainActivity", "Humidity data inserted into the database");
-                } else {
-                    Log.d("MainActivity", "Failed to insert humidity data into the database");
-                }
-            }
-
-            private void storeLightData(double luxValue) {
-                DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
-                boolean isInserted = databaseHelper.insertLightData(luxValue);
-
-                if (isInserted) {
-                    Log.d("MainActivity", "Light data inserted into the database");
-                } else {
-                    Log.d("MainActivity", "Failed to insert Light data into the database");
-                }
-            }
-
-
-        });
+        if (isInserted) {
+            Log.d("MainActivity", "Light data inserted into the database");
+        } else {
+            Log.d("MainActivity", "Failed to insert Light data into the database");
+        }
     }
 
     private void showData(Cursor cursor) {
@@ -260,5 +252,4 @@ public class MainActivity extends AppCompatActivity {
         builder.setMessage(msg);
         builder.show();
     }
-
 }

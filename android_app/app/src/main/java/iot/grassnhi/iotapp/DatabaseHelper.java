@@ -234,7 +234,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-
+    public boolean deleteAllData() {
+        deleteAllTemperatureData();
+        deleteAllHumidityData();
+        deleteAllLightData();
+        deleteAllAICameraData();
+        return true;
+    }
 
     private String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(

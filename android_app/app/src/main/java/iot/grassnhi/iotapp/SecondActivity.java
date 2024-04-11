@@ -97,7 +97,7 @@ public class SecondActivity extends AppCompatActivity {
         btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteAllTemperatureData();
+                deleteAllData();
             }
         });
 
@@ -121,13 +121,13 @@ public class SecondActivity extends AppCompatActivity {
         }
     }
 
-    private void deleteAllTemperatureData() {
-        boolean result = myDB.deleteAllTemperatureData();
+    private void deleteAllData() {
+        boolean result = myDB.deleteAllData();
 
         if (result) {
-            Toast.makeText(SecondActivity.this, "All temperature data deleted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SecondActivity.this, "All data deleted", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(SecondActivity.this, "Failed to delete temperature data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SecondActivity.this, "Failed to delete all data", Toast.LENGTH_SHORT).show();
         }
     }
 
