@@ -5,126 +5,86 @@ import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.iotapp.R;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import java.security.KeyStore;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class LineChartActivity extends AppCompatActivity {
 
-    private DatabaseHelper myDB;
-    private LineChart tempChart;
-    private LineDataSet lineDataSet;
-    private LineData lineData;
+    LineChart tempChart, humiChart, luxChart;
+    DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_line_chart);
 
-        tempChart = findViewById(R.id.tempChart);
-        myDB = new DatabaseHelper(this);
+        tempChart = (LineChart) findViewById(R.id.tempChart);
+        LineDataSet lineDataSet1 = new LineDataSet(dataValue1(), "Temperature History");
+        ArrayList<ILineDataSet> dataSets1 = new ArrayList<>();
+        dataSets1.add(lineDataSet1);
 
-        setupChart();
-        updateChart();
-    }
-
-    private void setupChart() {
-        List<Entry> entries = getDataValues();
-
-        lineDataSet = new LineDataSet(entries, "Temperature");
-        lineDataSet.setLineWidth(4);
-        lineDataSet.setColor(Color.BLUE);
-        lineDataSet.setValueTextColor(Color.BLACK);
-
-        lineData = new LineData(lineDataSet);
-
-        Description description = new Description();
-        description.setText("Temperature Data Chart");
-        tempChart.setDescription(description);
-        tempChart.setDrawGridBackground(false);
-
-        Legend legend = tempChart.getLegend();
-        legend.setForm(Legend.LegendForm.LINE);
-
-        XAxis xAxis = tempChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(new TimeValueFormatter());
-        xAxis.setLabelRotationAngle(45f);
-
-        YAxis leftAxis = tempChart.getAxisLeft();
-        leftAxis.setAxisMinimum(0f);
-
-        YAxis rightAxis = tempChart.getAxisRight();
-        rightAxis.setEnabled(false);
-
-        tempChart.setData(lineData);
+        LineData data1 = new LineData(dataSets1);
+        tempChart.setData(data1);
         tempChart.invalidate();
+
+        humiChart = (LineChart) findViewById(R.id.humiChart);
+        LineDataSet lineDataSet2 = new LineDataSet(dataValue2(), "Humidity History");
+        ArrayList<ILineDataSet> dataSets2 = new ArrayList<>();
+        dataSets2.add(lineDataSet2);
+
+        LineData data2 = new LineData(dataSets2);
+        humiChart.setData(data2);
+        humiChart.invalidate();
+
+        luxChart = (LineChart) findViewById(R.id.luxChart);
+        LineDataSet lineDataSet3 = new LineDataSet(dataValue3(), "Light History");
+        ArrayList<ILineDataSet> dataSets3 = new ArrayList<>();
+        dataSets3.add(lineDataSet3);
+
+        LineData data3 = new LineData(dataSets3);
+        luxChart.setData(data3);
+        luxChart.invalidate();
     }
 
-    private List<Entry> getDataValues() {
-        List<Entry> entries = new ArrayList<>();
+    private ArrayList<Entry> dataValue1(){
+        ArrayList<Entry> dataVals = new ArrayList<Entry>();
+        dataVals.add(new Entry(0, 29));
+        dataVals.add(new Entry(1, 30));
+        dataVals.add(new Entry(2, 28));
+        dataVals.add(new Entry(3, 29.5F));
+        dataVals.add(new Entry(4, 32));
 
-        Cursor cursor = myDB.getAllTemperatureData();
-
-        if (cursor.moveToFirst()) {
-            int count = 0;
-            do {
-                long timestamp = getTimestampFromDateString(cursor.getString(cursor.getColumnIndex("DATE_TIME")));
-                float temperatureValue = cursor.getFloat(cursor.getColumnIndex("VALUE"));
-                entries.add(new Entry(timestamp, temperatureValue));
-
-                // Limit to at most 10 newest values
-                count++;
-                if (count >= 10) {
-                    break;
-                }
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        return entries;
+        return dataVals;
     }
+    private ArrayList<Entry> dataValue2(){
+        ArrayList<Entry> dataVals = new ArrayList<Entry>();
+        dataVals.add(new Entry(0, 80));
+        dataVals.add(new Entry(1, 65));
+        dataVals.add(new Entry(2, 70.9F));
+        dataVals.add(new Entry(3, 50));
+        dataVals.add(new Entry(4, 45));
 
-    private void updateChart() {
-        List<Entry> updatedEntries = getDataValues();
-        lineDataSet.setValues(updatedEntries);
-        lineData.notifyDataChanged();
-        tempChart.notifyDataSetChanged();
-        tempChart.invalidate();
+        return dataVals;
     }
+    private ArrayList<Entry> dataValue3(){
+        ArrayList<Entry> dataVals = new ArrayList<Entry>();
+        dataVals.add(new Entry(0, 123));
+        dataVals.add(new Entry(1, 200));
+        dataVals.add(new Entry(2, 234));
+        dataVals.add(new Entry(3, 130));
+        dataVals.add(new Entry(4, 110));
 
-    private long getTimestampFromDateString(String dateString) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            Date date = dateFormat.parse(dateString);
-            return date.getTime();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return dataVals;
     }
-
-    private class TimeValueFormatter extends ValueFormatter {
-        private final SimpleDateFormat timeFormatWithSeconds = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-
-        @Override
-        public String getFormattedValue(float value) {
-            long timestamp = (long) value;
-            Date date = new Date(timestamp);
-            return timeFormatWithSeconds.format(date);
-        }
-    }
-
 }

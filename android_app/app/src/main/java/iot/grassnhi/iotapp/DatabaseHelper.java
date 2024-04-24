@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.github.mikephil.charting.data.Entry;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -247,5 +250,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    public ArrayList<Entry> getLightDataEntries() {
+        ArrayList<Entry> lightDataEntries = new ArrayList<>();
+        Cursor cursor = getAllLightData();
+        if (cursor != null && cursor.moveToFirst()) {
+            int index = 0;
+            do {
+                double value = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_VALUE));
+                // Add Entry object to the list
+                lightDataEntries.add(new Entry(index, (float) value));
+                index++;
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return lightDataEntries;
+    }
+
+    // Get humidity data as ArrayList<Entry>
+    public ArrayList<Entry> getHumidityDataEntries() {
+        ArrayList<Entry> humidityDataEntries = new ArrayList<>();
+        Cursor cursor = getAllHumidityData();
+        if (cursor != null && cursor.moveToFirst()) {
+            int index = 0;
+            do {
+                double value = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_VALUE));
+                // Add Entry object to the list
+                humidityDataEntries.add(new Entry(index, (float) value));
+                index++;
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return humidityDataEntries;
+    }
+
+    // Get temperature data as ArrayList<Entry>
+    public ArrayList<Entry> getTemperatureDataEntries() {
+        ArrayList<Entry> temperatureDataEntries = new ArrayList<>();
+        Cursor cursor = getAllTemperatureData();
+        if (cursor != null && cursor.moveToFirst()) {
+            int index = 0;
+            do {
+                double value = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_VALUE));
+                // Add Entry object to the list
+                temperatureDataEntries.add(new Entry(index, (float) value));
+                index++;
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return temperatureDataEntries;
     }
 }

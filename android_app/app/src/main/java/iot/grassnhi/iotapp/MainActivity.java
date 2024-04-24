@@ -19,6 +19,7 @@ import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.github.angads25.toggle.model.ToggleableView;
 import com.github.angads25.toggle.widget.LabeledSwitch;
 
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -83,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
         mqttHelper.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
-
+//                btnLED.setEnabled(false);
+//                btnPUMP.setEnabled(false);
             }
 
             @Override
@@ -94,31 +96,37 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
+//                btnLED.setEnabled(true);
+//                btnPUMP.setEnabled(true);
             }
         });
 
         btnLED.setOnToggledListener(new OnToggledListener() {
             @Override
-            public void onSwitched(ToggleableView toggleableView, boolean isOn) {
+            public void onSwitched(ToggleableView toggleableView, final boolean isOn) {
+
                 if (isOn == true) {
-                    sendDataMQTT("grassnhi/feeds/nutnhan1", "1");
+                    sendDataMQTT("grassnhi/feeds/nutnhan1", "1"); // Pass current button state
                 } else {
-                    sendDataMQTT("grassnhi/feeds/nutnhan1", "0");
+                    sendDataMQTT("grassnhi/feeds/nutnhan1", "0"); // Pass current button state
                 }
             }
         });
 
         btnPUMP.setOnToggledListener(new OnToggledListener() {
+
             @Override
-            public void onSwitched(ToggleableView toggleableView, boolean isOn) {
+            public void onSwitched(ToggleableView toggleableView, final boolean isOn) {
                 if (isOn == true) {
-                    sendDataMQTT("grassnhi/feeds/nutnhan2", "1");
+                    sendDataMQTT("grassnhi/feeds/nutnhan2", "1"); // Pass current button state
+
                 } else {
-                    sendDataMQTT("grassnhi/feeds/nutnhan2", "0");
+                    sendDataMQTT("grassnhi/feeds/nutnhan2", "0"); // Pass current button state
                 }
             }
         });
+
+        fetchInitialStateFromServer();
 
         imageView1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,22 +148,61 @@ public class MainActivity extends AppCompatActivity {
                 showData(myDB.getAllLightData());
             }
         });
+
+        txtTemp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start LineChartActivity
+                startActivity(new Intent(MainActivity.this, LineChartActivity.class));
+            }
+        });
     }
 
-    public void sendDataMQTT(String topic, String value) {
+    private void fetchInitialStateFromServer() {
+
+//        mqttHelper.mqttAndroidClient.subscribe("grassnhi/feeds/nutnhan1", 0);
+//        mqttHelper.mqttAndroidClient.subscribe("grassnhi/feeds/nutnhan2", 0);
+    }
+    public void sendDataMQTT(final String topic, final String value) {
+
         MqttMessage msg = new MqttMessage();
         msg.setId(1234);
         msg.setQos(0);
         msg.setRetained(false);
-
-        byte[] b = value.getBytes(Charset.forName("UTF-8"));
-        msg.setPayload(b);
+        msg.setPayload(value.getBytes(Charset.forName("UTF-8")));
 
         try {
-            mqttHelper.mqttAndroidClient.publish(topic, msg);
+            mqttHelper.mqttAndroidClient.publish(topic, msg, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Toast.makeText(MainActivity.this, "Message sent successfully", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Toast.makeText(MainActivity.this, "Failed to send message. Please check your connection.", Toast.LENGTH_SHORT).show();
+                    // Revert the button state to its previous state
+                    if (topic.equals("grassnhi/feeds/nutnhan1")) {
+                        btnLED.setOn(!btnLED.isOn());
+
+//                        btnLED.setEnabled(false);
+                    } else if (topic.equals("grassnhi/feeds/nutnhan2")) {
+                        btnPUMP.setOn(!btnPUMP.isOn());
+//                        btnPUMP.setEnabled(false);
+                    }
+                }
+            });
         } catch (MqttException e) {
+            Toast.makeText(MainActivity.this, "Failed to send message.", Toast.LENGTH_SHORT).show();
+            // Revert the button state to its previous state
+            if (topic.equals("grassnhi/feeds/nutnhan1")) {
+                btnLED.setOn(!btnLED.isOn());
+            } else if (topic.equals("grassnhi/feeds/nutnhan2")) {
+                btnPUMP.setOn(!btnPUMP.isOn());
+            }
         }
     }
+
 
     private void onMessageReceived(String topic, String message) {
         if (topic.contains("cambien1")) {

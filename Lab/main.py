@@ -2,12 +2,12 @@ import sys
 from Adafruit_IO import MQTTClient
 import time
 import random
-from cam_ai import *
+# from cam_ai import *
 from uart import *
 
 AIO_FEED_IDs = ["nutnhan1", "nutnhan2"]
 AIO_USERNAME = "grassnhi"
-AIO_KEY = "aio_BFvt03IacRoNacpewA2lWJA0qkda"
+AIO_KEY = "aio_dTxP91l7jRKky4pgORGH3kmHfG0Z"
 
 def connected(client):
     print("Ket noi thanh cong ...")
@@ -78,5 +78,18 @@ while True:
     #         client.publish("ai", ai_result)
     #         client.publish("image", pic)
         
-    readSerial(client)
+    try:
+        # writeData("A")
+        readSerial(client)
+    except Exception as e: 
+        ser.close()
+        print("Error: unplugged")
+        try:
+            ser.port = getPort()
+            ser.baudrate = 115200
+            ser.open()
+            if (ser.isOpen()):
+                print(ser)
+        except:
+            print("Open error")
     time.sleep(1)

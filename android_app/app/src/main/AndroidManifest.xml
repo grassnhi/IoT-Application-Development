@@ -19,7 +19,12 @@
         android:theme="@style/Theme.IoTApp">
         <activity
             android:name="iot.grassnhi.iotapp.LoginActivity"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="iot.grassnhi.iotapp.LineChartActivity"
@@ -29,13 +34,7 @@
             android:exported="true" />
         <activity
             android:name="iot.grassnhi.iotapp.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" />
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
     </application>

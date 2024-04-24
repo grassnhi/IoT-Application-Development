@@ -7,7 +7,7 @@ def getPort():
     for i in range(0, N):
         port = ports[i]
         strPort = str(port)
-        if "USB Serial Device" in strPort:
+        if "USB-SERIAL" in strPort:
             splitPort = strPort.split(" ")
             commPort = (splitPort[0])
     # return commPort
@@ -39,6 +39,7 @@ def readSerial(client):
     if (bytesToRead > 0):
         global mess
         mess = mess + ser.read(bytesToRead).decode("UTF-8")
+        print("Read data:" + mess)
         while ("#" in mess) and ("!" in mess):
             start = mess.find("!")
             end = mess.find("#")
@@ -47,7 +48,7 @@ def readSerial(client):
                 mess = ""
             else:
                 mess = mess[end+1:]
-
+    mess = ""
 def writeData(data):
     # ser.write(str(data)).encode('utf-8')
     ser.write(str(data).encode())
