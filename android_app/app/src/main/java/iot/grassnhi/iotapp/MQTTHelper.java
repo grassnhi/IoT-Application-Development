@@ -19,11 +19,12 @@ public class MQTTHelper {
 
     final String clientId = "nhinhinhi";
     final String username = "grassnhi";
-    final String password = "aio_dTxP91l7jRKky4pgORGH3kmHfG0Z";
+    final String password = "aio_ZIXZ95Gx2FBGoWgab5STZP7Wbuqm";
 
     final String serverUri = "tcp://io.adafruit.com:1883";
 
     public MQTTHelper(Context context){
+
         mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
         mqttAndroidClient.setCallback(new MqttCallback() {
             @Override

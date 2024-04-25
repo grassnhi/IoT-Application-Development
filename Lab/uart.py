@@ -7,7 +7,8 @@ def getPort():
     for i in range(0, N):
         port = ports[i]
         strPort = str(port)
-        if "USB-SERIAL" in strPort:
+        # if "USB-SERIAL" in strPort:
+        if "com0com" in strPort:
             splitPort = strPort.split(" ")
             commPort = (splitPort[0])
     # return commPort
@@ -19,7 +20,7 @@ ser = serial.Serial()
 print(ser)
 
 if getPort() != "None":
-    ser = serial.Serial( port=getPort(), baudrate=115200)
+    ser = serial.Serial( port=getPort(), baudrate=9600)
     print(ser)
 
 mess = ""
